@@ -19,8 +19,18 @@
 ## Describe SLO/SLI
 *TODO:* Describe, in your own words, what the SLIs are, based on an SLO of *monthly uptime* and *request response time*.
 
+The most well-known SLIs for the above SLOs would be:
+1. 98% website uptime per month
+2. 90.5% of requests to backend service would respond in less than 200ms per month
+
 ## Creating SLI metrics.
 *TODO:* It is important to know why we want to measure certain metrics for our customer. Describe in detail 5 metrics to measure these SLIs. 
+
+1. Uptime or how many percentage of our monthly time the service was in the fully operational state.
+2. Latency or the amount of time in ms it takes for a request to be proccessed and returned to the requester.
+3. Error rate or the number of errors requests during a month - errors take away from our uptime so we need to monitor them. 
+4. Disk, cpu and ram utilization - if either one of those is used at its maximum our response time would decrease due to lack of resources and it may lead to a failure hence also takes away from our uptime.
+5. Traffic or the number of HTTP requests per second showing us how highly used our system is. Higher usage means the chance to overstress the system if we are not prepared for the incoming traffic.
 
 ## Create a Dashboard to measure our SLIs
 *TODO:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot.
