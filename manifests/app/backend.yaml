@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-app
+  labels: 
+    app: backend
+  annotations:
+    "sidecar.jaegertracing.io/inject": "true"
 spec:
   replicas: 3
   selector:
@@ -16,16 +20,22 @@ spec:
       - name: backend
         image: ghcr.io/thejaysmith/backend:v1
         ports:
-        - containerPort: 8080
+        - name: backendport
+          containerPort: 8080
+          protocol: TCP
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
+  labels: 
+    app: backend
 spec:
   selector:
     app: backend
   ports:
-    - port: 8081
-      targetPort: 8080
+    - name: backend
+      protocol: TCP
+      port: 8081
+      targetPort: backendport
   type: LoadBalancer
