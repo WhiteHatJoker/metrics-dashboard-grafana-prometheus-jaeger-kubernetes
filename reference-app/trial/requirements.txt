@@ -10,4 +10,3 @@ opentelemetry-instrumentation-flask==0.12b0
 opentelemetry-instrumentation-requests==0.12b0
 opentelemetry-exporter-jaeger==0.12b0
 prometheus_client
-prometheus-flask-exporter==0.18.2
