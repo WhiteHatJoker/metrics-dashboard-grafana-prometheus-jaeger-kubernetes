@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-import logging, os
+import logging, os, random
 
 from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 
@@ -55,7 +55,8 @@ def add_star():
 
 @app.route('/errors')
 def error_message():
-  return jsonify({"error": "Fake Error",}), 500
+  errors_choice = [500,503]
+  return jsonify({"error": "Fake Error",}), random.choice(errors_choice)
 
 if __name__ == "__main__":
     app.run()
