@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import logging, os
-from prometheus_flask_exporter import PrometheusMetrics
+
 from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 
 from jaeger_client import Config
@@ -9,17 +9,14 @@ from flask_opentracing import FlaskTracing
 import pymongo
 from flask_pymongo import PyMongo
 
+logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
+metrics = GunicornInternalPrometheusMetrics(app)
+metrics.info('app_info', 'Backend Service', version='1.0.3')
+
 app.config['MONGO_DBNAME'] = 'example-mongodb'
 app.config['MONGO_URI'] = 'mongodb://example-mongodb-svc.default.svc.cluster.local:27017/example-mongodb'
 mongo = PyMongo(app)
-
-logging.basicConfig(level=logging.INFO)
-is_gunicorn = "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")
-if is_gunicorn:
-    metrics = GunicornInternalPrometheusMetrics(app)
-else:
-    metrics = PrometheusMetrics(app)
 
 config = Config(
     config={
