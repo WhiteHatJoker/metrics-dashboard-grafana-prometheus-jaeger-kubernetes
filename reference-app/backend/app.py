@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import logging, os
 
-from prometheus_flask_exporter import PrometheusMetrics
+from prometheus_flask_exporter.multiprocess import GunicornInternalPrometheusMetrics
 
 from jaeger_client import Config
 from flask_opentracing import FlaskTracing
@@ -11,7 +11,7 @@ from flask_pymongo import PyMongo
 
 logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
-metrics = PrometheusMetrics(app)
+metrics = GunicornInternalPrometheusMetrics(app)
 metrics.info('app_info', 'Backend Service', version='1.0.3')
 
 app.config['MONGO_DBNAME'] = 'example-mongodb'
