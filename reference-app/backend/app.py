@@ -53,5 +53,9 @@ def add_star():
   output = {'name' : new_star['name'], 'distance' : new_star['distance']}
   return jsonify({'result' : output})
 
+@app.route('/errors')
+def error_message():
+  return jsonify({"error": "Fake Error",}), 500
+
 if __name__ == "__main__":
     app.run()
