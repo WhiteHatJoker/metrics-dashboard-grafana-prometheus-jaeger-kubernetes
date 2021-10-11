@@ -17,6 +17,7 @@ spec:
       containers:
       - name: frontend
         image: rkhudoyberdiev/frontend-app:latest
+        imagePullPolicy: Always
         ports:
         - name: frontendport
           containerPort: 8080

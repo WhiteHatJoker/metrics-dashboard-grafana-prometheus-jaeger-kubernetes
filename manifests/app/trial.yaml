@@ -19,6 +19,7 @@ spec:
       containers:
       - name: trial
         image: rkhudoyberdiev/trial-app:latest
+        imagePullPolicy: Always
         ports:
         - name: trialport
           containerPort: 8080
