@@ -87,3 +87,9 @@ Description: Star endpoint is accepting a post request but it is unable to conne
 *TODO*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
 
 ![Alt text](answer-img/final-dashboard.jpg "Jaeger source in Grafana")
+- Drive Usage - how much disk drive space is being used currently.
+- CPU Usage - how much cpu is being used currently.
+- Memory Usage - how much RAM memory is being used currently.
+- Successful Responses - total number of successful requests per month by containers. 
+- Error Responses - total number of error requests per month by containers and statuses.
+- Uptime - uptime of the backend and frontend services.
