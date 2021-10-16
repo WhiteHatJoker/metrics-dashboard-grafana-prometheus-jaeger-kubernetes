@@ -78,10 +78,12 @@ Description: Star endpoint is accepting a post request but it is unable to conne
 - RAM Memory Utilization < 90%
 - CPU Utilization < 90%
 - Disk Drive Utilization < 90%
-- Successful responses per minute > 99.90% of requests
-- Error requests per minute < 0.1% of requests
+- Successful responses per month > 99.90% of requests
+- Error responses per month < 0.1% of requests
 - Deployment Uptime > 99.95%
 
 
 ## Final Dashboard
 *TODO*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
+
+![Alt text](answer-img/final-dashboard.jpg "Jaeger source in Grafana")
