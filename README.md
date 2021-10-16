@@ -68,8 +68,20 @@ Description: Star endpoint is accepting a post request but it is unable to conne
 ## Creating SLIs and SLOs
 *TODO:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name three SLIs that you would use to measure the success of this SLO.
 
+1. Application uptime of 99.95%
+2. More than 99% requests should be successful and error free
+3. The server resources should not exceed 90% utilization
+
 ## Building KPIs for our plan
 *TODO*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here.
+
+- RAM Memory Utilization < 90%
+- CPU Utilization < 90%
+- Disk Drive Utilization < 90%
+- Successful responses per minute > 99.90% of requests
+- Error requests per minute < 0.1% of requests
+- Deployment Uptime > 99.95%
+
 
 ## Final Dashboard
 *TODO*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
