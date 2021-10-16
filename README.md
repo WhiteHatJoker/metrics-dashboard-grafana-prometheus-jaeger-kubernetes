@@ -52,17 +52,17 @@ The most well-known SLIs for the above SLOs would be:
 
 TROUBLE TICKET
 
-Name:
+Name: 500 Server Error on Star endpoint of Backend app
 
-Date:
+Date: 16/Oct/2021 20:37:10
 
-Subject:
+Subject: Unable to connect to MongoDB
 
-Affected Area:
+Affected Area: Backend app's /star API endpoint
 
-Severity:
+Severity: High
 
-Description:
+Description: Star endpoint is accepting a post request but it is unable to connect to the MongoDB database either because the database doesn't exist or the connection is poorly configured
 
 
 ## Creating SLIs and SLOs
