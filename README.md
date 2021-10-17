@@ -19,9 +19,13 @@
 ## Describe SLO/SLI
 *TODO:* Describe, in your own words, what the SLIs are, based on an SLO of *monthly uptime* and *request response time*.
 
-The most well-known SLIs for the above SLOs would be:
-1. 98% website uptime per month
-2. 90.5% of requests to backend service would respond in less than 200ms per month
+Suppose we are a moving software company providing saas solutions to customers and our SLO is:
+We guarantee 99% software uptime every month and 90% of monthly requests in less than 200ms.
+
+To meet that objective we will measure SLIs for example at the end of one month:
+- At the end of January, we had a monthly CRM uptime of 100% so we exceeded our SLO here
+- 90.5% of January requests to backend service responded in less than 200ms
+Based on the numbers we got, we met the SLO we had.
 
 ## Creating SLI metrics.
 *TODO:* It is important to know why we want to measure certain metrics for our customer. Describe in detail 5 metrics to measure these SLIs. 
@@ -66,11 +70,12 @@ Description: Star endpoint is accepting a post request but it is unable to conne
 
 
 ## Creating SLIs and SLOs
-*TODO:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name three SLIs that you would use to measure the success of this SLO.
+*TODO:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name four SLIs that you would use to measure the success of this SLO.
 
-1. Application uptime of 99.95%
-2. More than 99% requests should be successful and error free
-3. The server resources should not exceed 90% utilization
+1. Application uptime of 99.95% per month
+2. More than 99% of monthly requests should be successful and error free
+3. The server resources should not exceed 90% utilization per month
+4. The response time of 90% of monthly requests should not exceed 1500ms
 
 ## Building KPIs for our plan
 *TODO*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here.
@@ -81,6 +86,9 @@ Description: Star endpoint is accepting a post request but it is unable to conne
 - Successful responses per month > 99.90% of requests
 - Error responses per month < 0.1% of requests
 - Deployment Uptime > 99.95%
+- Server Uptime
+- Average Response Time < 250ms
+- Percentage of requests with latency of less than 250ms > 90%
 
 
 ## Final Dashboard
@@ -93,3 +101,6 @@ Description: Star endpoint is accepting a post request but it is unable to conne
 - Successful Responses - total number of successful requests per month by containers. 
 - Error Responses - total number of error requests per month by containers and statuses.
 - Uptime - uptime of the backend and frontend services.
+- Server Uptime - how many minutes passed since the server was booted up.
+- Average Response Time - average response time in ms measured over 1 hour intervals for successful requests. Shown per path.
+- Requests under 250ms - percentage of successful requests finished within 250ms. Shown per path.
