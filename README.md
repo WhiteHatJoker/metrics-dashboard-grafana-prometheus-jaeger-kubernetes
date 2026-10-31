@@ -1,106 +1,101 @@
-**Note:** For the screenshots, you can store all of your answer images in the `answer-img` directory.
+# Observability Stack: Prometheus, Grafana and Jaeger on Kubernetes
 
-## Verify the monitoring installation
+Instrumented three Flask microservices running on Kubernetes with Prometheus metrics and Jaeger distributed tracing, then defined SLOs/SLIs and built a Grafana dashboard to track them. Includes a sample incident ticket raised from what the dashboards showed.
 
-*TODO:* run `kubectl` command to show the running pods and services for all components. Take a screenshot of the output and include it here to verify the installation
+![Prometheus](https://img.shields.io/badge/Prometheus-metrics-e6522c) ![Grafana](https://img.shields.io/badge/Grafana-dashboards-f46800) ![Jaeger](https://img.shields.io/badge/Jaeger-tracing-66cfe3) ![Kubernetes](https://img.shields.io/badge/Kubernetes-k3s-326ce5)
 
-![Alt text](answer-img/all-services.jpg "All Services")
+## What's in the cluster
 
-## Setup the Jaeger and Prometheus source
-*TODO:* Expose Grafana to the internet and then setup Prometheus as a data source. Provide a screenshot of the home page after logging into Grafana.
+| Component | How it's deployed |
+|-----------|-------------------|
+| Prometheus + Grafana | `kube-prometheus-stack` Helm chart in the `monitoring` namespace |
+| Jaeger | Jaeger Operator + custom instance (`manifests/jaeger-custom/`) in the `observability` namespace |
+| Frontend app (Flask) | `manifests/app/frontend.yaml`, port 8080 |
+| Backend app (Flask + MongoDB) | `manifests/app/backend.yaml`, port 8081 |
+| Trial app (Flask) | `manifests/app/trial.yaml`, port 8082 |
 
-![Alt text](answer-img/grafana-login.jpg "Grafana Login View")
+Each app exposes request metrics through `prometheus-flask-exporter` (Gunicorn multiprocess mode) and is picked up by a `ServiceMonitor`. The backend and trial apps send spans to Jaeger via `jaeger-client`/OpenTracing and OpenTelemetry, with a span per endpoint and tags for results and errors.
 
-## Create a Basic Dashboard
-*TODO:* Create a dashboard in Grafana that shows Prometheus as a source. Take a screenshot and include it here.
+## SLOs and SLIs
 
-![Alt text](answer-img/prometheus-source.jpg "Prometheus Source")
+Example service-level objective for a SaaS product: **99% monthly uptime, and 90% of monthly requests served in under 200 ms.**
 
-## Describe SLO/SLI
-*TODO:* Describe, in your own words, what the SLIs are, based on an SLO of *monthly uptime* and *request response time*.
+SLIs used to measure it:
 
-Suppose we are a moving software company providing saas solutions to customers and our SLO is:
-We guarantee 99% software uptime every month and 90% of monthly requests in less than 200ms.
+1. **Uptime**: percentage of the month the service was fully operational.
+2. **Latency**: time from request to response, in ms.
+3. **Error rate**: failed requests per month (errors eat into uptime).
+4. **Saturation**: CPU, memory and disk utilization; a maxed-out resource degrades latency and leads to failures.
+5. **Traffic**: HTTP requests per second, to see how close the system is to its limits.
 
-To meet that objective we will measure SLIs for example at the end of one month:
-- At the end of January, we had a monthly CRM uptime of 100% so we exceeded our SLO here
-- 90.5% of January requests to backend service responded in less than 200ms
-Based on the numbers we got, we met the SLO we had.
+Target SLOs for this stack:
 
-## Creating SLI metrics.
-*TODO:* It is important to know why we want to measure certain metrics for our customer. Describe in detail 5 metrics to measure these SLIs. 
+- Application uptime of 99.95% per month
+- More than 99% of monthly requests succeed without errors
+- Server resources stay below 90% utilization
+- 90% of monthly requests respond within 1500 ms
 
-1. Uptime or how many percentage of our monthly time the service was in the fully operational state.
-2. Latency or the amount of time in ms it takes for a request to be proccessed and returned to the requester.
-3. Error rate or the number of errors requests during a month - errors take away from our uptime so we need to monitor them. 
-4. Disk, cpu and ram utilization - if either one of those is used at its maximum our response time would decrease due to lack of resources and it may lead to a failure hence also takes away from our uptime.
-5. Traffic or the number of HTTP requests per second showing us how highly used our system is. Higher usage means the chance to overstress the system if we are not prepared for the incoming traffic.
+KPIs tracked on the final dashboard: CPU, memory and disk utilization < 90%; successful responses > 99.9%; error responses < 0.1%; deployment uptime > 99.95%; server uptime; average response time < 250 ms; share of requests under 250 ms > 90%.
 
-## Create a Dashboard to measure our SLIs
-*TODO:* Create a dashboard to measure the uptime of the frontend and backend services We will also want to measure to measure 40x and 50x errors. Create a dashboard that show these values over a 24 hour period and take a screenshot.
+## Final dashboard
 
-![Alt text](answer-img/health-report.jpg "24 Hour Health Report")
+![Final dashboard](answer-img/final-dashboard.jpg)
 
-## Tracing our Flask App
-*TODO:*  We will create a Jaeger span to measure the processes on the backend. Once you fill in the span, provide a screenshot of it here.
+| Panel | Shows |
+|-------|-------|
+| Drive / CPU / Memory usage | Current resource utilization |
+| Successful responses | Successful requests per month, by container |
+| Error responses | Failed requests per month, by container and status code |
+| Uptime | Uptime of the frontend and backend services |
+| Server uptime | Minutes since the node booted |
+| Average response time | Average latency of successful requests over 1-hour windows, per path |
+| Requests under 250 ms | Percentage of successful requests finishing within 250 ms, per path |
 
-![Alt text](answer-img/jaeger-ui.jpg "Jaeger Tracing UI")
+A Grafana-importable reference dashboard is in [`reference-dashboards/`](reference-dashboards/).
 
-## Jaeger in Dashboards
-*TODO:* Now that the trace is running, let's add the metric to our current Grafana dashboard. Once this is completed, provide a screenshot of it here.
+## Tracing
 
-![Alt text](answer-img/jaeger-in-grafana.jpg "Jaeger source in Grafana")
+![Jaeger UI](answer-img/jaeger-ui.jpg)
 
-## Report Error
-*TODO:* Using the template below, write a trouble ticket for the developers, to explain the errors that you are seeing (400, 500, latency) and to let them know the file that is causing the issue.
+Jaeger is also added as a Grafana data source so traces can be viewed next to metrics:
 
-TROUBLE TICKET
+![Jaeger in Grafana](answer-img/jaeger-in-grafana.jpg)
 
-Name: 500 Server Error on Star endpoint of Backend app
+## Incident ticket raised from the dashboards
 
-Date: 16/Oct/2021 20:37:10
+> **500 Server Error on the backend `/star` endpoint**
+> **Date:** 16 Oct 2021 · **Severity:** High · **Affected area:** backend `/star` API
+> The endpoint accepts POST requests but cannot reach MongoDB, either because the database does not exist or the connection string is misconfigured. Spotted from the error-rate panel and confirmed with the failing span in Jaeger.
 
-Subject: Unable to connect to MongoDB
+## Run it
 
-Affected Area: Backend app's /star API endpoint
+```bash
+# 1. VM with k3s
+vagrant up && vagrant ssh
+sh k3s.sh                     # or install k3s manually
 
-Severity: High
+# 2. Monitoring
+kubectl create namespace monitoring
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install prometheus prometheus-community/kube-prometheus-stack -n monitoring
 
-Description: Star endpoint is accepting a post request but it is unable to connect to the MongoDB database either because the database doesn't exist or the connection is poorly configured
+# 3. Tracing
+kubectl create namespace observability
+kubectl apply -f manifests/jaeger-custom/
 
+# 4. Applications
+kubectl apply -f manifests/app/
 
-## Creating SLIs and SLOs
-*TODO:* We want to create an SLO guaranteeing that our application has a 99.95% uptime per month. Name four SLIs that you would use to measure the success of this SLO.
+# 5. Grafana (default admin / prom-operator)
+kubectl port-forward -n monitoring svc/prometheus-grafana 3000:80
+```
 
-1. Application uptime of 99.95% per month
-2. More than 99% of monthly requests should be successful and error free
-3. The server resources should not exceed 90% utilization per month
-4. The response time of 90% of monthly requests should not exceed 1500ms
+Images are on Docker Hub as `rkhudoyberdiev/frontend-app`, `rkhudoyberdiev/backend-app` and `rkhudoyberdiev/trial-app`. Source for each is in [`reference-app/`](reference-app/).
 
-## Building KPIs for our plan
-*TODO*: Now that we have our SLIs and SLOs, create KPIs to accurately measure these metrics. We will make a dashboard for this, but first write them down here.
+## Screenshots
 
-- RAM Memory Utilization < 90%
-- CPU Utilization < 90%
-- Disk Drive Utilization < 90%
-- Successful responses per month > 99.90% of requests
-- Error responses per month < 0.1% of requests
-- Deployment Uptime > 99.95%
-- Server Uptime
-- Average Response Time < 250ms
-- Percentage of requests with latency of less than 250ms > 90%
+All monitoring components running, Prometheus data source, health report and more are in [`answer-img/`](answer-img/).
 
+---
 
-## Final Dashboard
-*TODO*: Create a Dashboard containing graphs that capture all the metrics of your KPIs and adequately representing your SLIs and SLOs. Include a screenshot of the dashboard here, and write a text description of what graphs are represented in the dashboard.  
-
-![Alt text](answer-img/final-dashboard.jpg "Jaeger source in Grafana")
-- Drive Usage - how much disk drive space is being used currently.
-- CPU Usage - how much cpu is being used currently.
-- Memory Usage - how much RAM memory is being used currently.
-- Successful Responses - total number of successful requests per month by containers. 
-- Error Responses - total number of error requests per month by containers and statuses.
-- Uptime - uptime of the backend and frontend services.
-- Server Uptime - how many minutes passed since the server was booted up.
-- Average Response Time - average response time in ms measured over 1 hour intervals for successful requests. Shown per path.
-- Requests under 250ms - percentage of successful requests finished within 250ms. Shown per path.
+Built as part of the Udacity Cloud Native Application Architecture Nanodegree. Author: Ravshan Khudoyberdiev.
